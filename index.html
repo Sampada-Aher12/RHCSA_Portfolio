@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sampada Aher — Linux &amp; Cloud Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14181c;
+    --surface:#1c232a;
+    --surface-2:#232b33;
+    --border:#323d47;
+    --text:#e8e6e1;
+    --muted:#8b95a1;
+    --amber:#d3a13a;
+    --amber-dim:#8a6d2c;
+    --teal:#5aa89a;
+    --red-hat:#c0392b;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    --sans:'IBM Plex Sans', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  a{color:var(--teal);}
+  ::selection{background:var(--amber);color:#14181c;}
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(20,24,28,0.88);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;}
+  .nav-brand{font-family:var(--mono);font-weight:600;color:var(--text);text-decoration:none;font-size:14px;}
+  .nav-brand .dot{color:var(--amber);}
+  .nav-links{display:flex;gap:22px;font-family:var(--mono);font-size:13px;}
+  .nav-links a{color:var(--muted);text-decoration:none;}
+  .nav-links a:hover{color:var(--amber);}
+  @media (max-width:600px){.nav-links{gap:12px;font-size:11px;}}
+
+  /* HERO / TERMINAL */
+  header.hero{padding:64px 0 40px;}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;color:var(--amber);
+    letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;
+  }
+  h1.name{
+    font-family:var(--mono);
+    font-size:clamp(30px,5vw,48px);
+    margin:0 0 8px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .role{color:var(--muted);font-size:17px;margin:0 0 28px;max-width:60ch;}
+
+  .terminal{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .term-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 14px;background:var(--surface-2);
+    border-bottom:1px solid var(--border);
+  }
+  .term-dot{width:10px;height:10px;border-radius:50%;background:#4a5560;}
+  .term-title{
+    margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--muted);
+  }
+  .term-body{
+    padding:18px 20px 24px;
+    font-family:var(--mono);
+    font-size:13.5px;
+    min-height:170px;
+  }
+  .term-line{color:var(--muted);margin:0 0 4px;}
+  .term-line .prompt{color:var(--teal);}
+  .term-line .path{color:var(--amber);}
+  .term-out{color:var(--text);margin:0 0 14px;padding-left:0;white-space:pre-wrap;}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--amber);vertical-align:text-bottom;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* SECTIONS */
+  section{padding:52px 0;border-top:1px solid var(--border);}
+  .sec-head{
+    display:flex;align-items:baseline;gap:10px;margin-bottom:26px;
+  }
+  .sec-tag{
+    font-family:var(--mono);font-size:11px;color:var(--bg);
+    background:var(--amber);padding:2px 8px;border-radius:3px;font-weight:600;
+  }
+  .sec-head h2{
+    font-family:var(--mono);font-size:20px;margin:0;color:var(--text);font-weight:600;
+  }
+  .sec-comment{font-family:var(--mono);font-size:12px;color:var(--muted);}
+
+  /* ABOUT */
+  .about-block{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    padding:22px 24px;font-family:var(--mono);font-size:13.5px;
+  }
+  .about-block .k{color:var(--teal);}
+  .about-block p{margin:10px 0 0;font-family:var(--sans);font-size:15px;color:var(--text);line-height:1.7;}
+
+  /* SKILLS as package list */
+  .pkg-list{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .pkg-row{background:var(--surface);display:grid;grid-template-columns:160px 1fr;gap:18px;padding:13px 18px;}
+  @media (max-width:600px){.pkg-row{grid-template-columns:1fr;gap:4px;}}
+  .pkg-name{font-family:var(--mono);font-size:12.5px;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;}
+  .pkg-val{font-size:14px;color:var(--text);}
+
+  /* EXPERIENCE */
+  .job{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    padding:22px 24px;margin-bottom:16px;
+  }
+  .job-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;margin-bottom:4px;}
+  .job-title{font-weight:600;font-size:16px;color:var(--text);}
+  .job-status{
+    font-family:var(--mono);font-size:11px;color:#7dbf9a;
+    background:rgba(125,191,154,0.12);border:1px solid rgba(125,191,154,0.3);
+    padding:2px 8px;border-radius:20px;
+  }
+  .job-meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .job ul{margin:0;padding-left:20px;color:var(--text);font-size:14.5px;}
+  .job li{margin-bottom:7px;}
+  .job li::marker{color:var(--amber);}
+
+  /* PROJECTS */
+  .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:700px){.proj-grid{grid-template-columns:1fr;}}
+  .proj-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    padding:20px;display:flex;flex-direction:column;
+  }
+  .proj-file{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px;}
+  .proj-name{font-weight:600;font-size:15.5px;margin-bottom:10px;color:var(--text);}
+  .proj-card ul{margin:0 0 14px;padding-left:18px;font-size:13.5px;color:var(--muted);flex:1;}
+  .proj-card li{margin-bottom:6px;}
+  .proj-link{font-family:var(--mono);font-size:12px;color:var(--teal);text-decoration:none;}
+  .proj-link:hover{text-decoration:underline;}
+
+  /* EDU + CERT */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:700px){.two-col{grid-template-columns:1fr;}}
+  .info-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;}
+  .info-card .label{font-family:var(--mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+  .info-card .title{font-weight:600;font-size:15px;margin-bottom:4px;}
+  .info-card .sub{font-size:13.5px;color:var(--muted);}
+  .cert-id{font-family:var(--mono);font-size:12px;color:var(--teal);margin-top:8px;display:inline-block;}
+
+  /* FOOTER / CONTACT */
+  footer{padding:50px 0 60px;border-top:1px solid var(--border);}
+  .contact-term{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;
+    font-family:var(--mono);font-size:13.5px;
+  }
+  .contact-term a{color:var(--text);text-decoration:none;border-bottom:1px dashed var(--muted);}
+  .contact-term a:hover{color:var(--amber);border-color:var(--amber);}
+  .contact-row{margin-bottom:8px;}
+  .footer-note{margin-top:26px;font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:center;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="nav-brand">sampada<span class="dot">@</span>aher<span class="dot">:~$</span></a>
+    <div class="nav-links">
+      <a href="#skills">skills</a>
+      <a href="#experience">experience</a>
+      <a href="#projects">projects</a>
+      <a href="#education">education</a>
+      <a href="#contact">contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="hero" id="top">
+    <div class="eyebrow">Red Hat Certified System Administrator</div>
+    <h1 class="name">Sampada Aher</h1>
+    <p class="role">Linux &amp; AWS systems administrator keeping RHEL servers, cloud infrastructure, and deployments running — from user management to serverless automation.</p>
+
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div>
+        <span class="term-title">bash — sampada@rhel10</span>
+      </div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+  </header>
+
+  <section id="skills">
+    <div class="sec-head"><span class="sec-tag">$</span><h2>cat /etc/skills.conf</h2></div>
+    <div class="pkg-list">
+      <div class="pkg-row"><div class="pkg-name">os</div><div class="pkg-val">RHEL 9 &amp; 10, Ubuntu, Windows</div></div>
+      <div class="pkg-row"><div class="pkg-name">linux admin</div><div class="pkg-val">User &amp; group management, file permissions, systemd, SSH, Firewalld (HTTP/HTTPS &amp; custom ports), SELinux context configuration &amp; troubleshooting, Apache administration</div></div>
+      <div class="pkg-row"><div class="pkg-name">networking</div><div class="pkg-val">DNS, DHCP, NFS, TCP/IP, HTTP/HTTPS</div></div>
+      <div class="pkg-row"><div class="pkg-name">storage</div><div class="pkg-val">LVM, disk partitioning, swap, fstab, EBS on AWS</div></div>
+      <div class="pkg-row"><div class="pkg-name">monitoring</div><div class="pkg-val">System health checks, alert troubleshooting, CloudWatch</div></div>
+      <div class="pkg-row"><div class="pkg-name">cloud (aws)</div><div class="pkg-val">EC2, S3, Lambda, API Gateway, DynamoDB, IAM, VPC, EBS, CloudWatch</div></div>
+      <div class="pkg-row"><div class="pkg-name">automation</div><div class="pkg-val">Bash scripting, Ansible (inventories, playbooks)</div></div>
+      <div class="pkg-row"><div class="pkg-name">containers / ci-cd</div><div class="pkg-val">Docker, Dockerfile, Docker Compose, container networking, Jenkins pipelines, GitHub integration</div></div>
+      <div class="pkg-row"><div class="pkg-name">tools</div><div class="pkg-val">Git, GitHub, VMware Workstation</div></div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="sec-head"><span class="sec-tag">$</span><h2>whoami --verbose</h2></div>
+    <div class="about-block">
+      <span class="k">summary</span> = "professional_summary.txt"
+      <p>RHCSA-certified with hands-on experience in RHEL-based environments and operational support. Comfortable across user management, storage configuration, service management, monitoring, and OS/network troubleshooting — with exposure to virtualization, AWS cloud infrastructure, and Bash automation.</p>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="sec-head"><span class="sec-tag">$</span><h2>systemctl status experience</h2></div>
+    <div class="job">
+      <div class="job-head">
+        <span class="job-title">Junior System Administrator — New Wings IT Solution</span>
+        <span class="job-status">● active</span>
+      </div>
+      <div class="job-meta">Nov 2025 – May 2026</div>
+      <ul>
+        <li>Administered Linux servers and AWS cloud services — user management, system configuration, and monitoring.</li>
+        <li>Performed Linux kernel updates, security patching, and system upgrades for improved stability and performance.</li>
+        <li>Managed and configured Apache HTTPD and NGINX web servers for application deployment.</li>
+        <li>Automated configuration management and deployments using Ansible.</li>
+        <li>Troubleshot system, network, and service issues to ensure high availability and reliability.</li>
+        <li>Utilized AWS services such as EC2, S3, IAM, and CloudWatch for cloud resource management and monitoring.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="sec-head"><span class="sec-tag">$</span><h2>ls ~/projects</h2></div>
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="proj-file">ansible-user-ssh-automation/</div>
+        <div class="proj-name">Centralized User &amp; SSH Access Automation</div>
+        <ul>
+          <li>Automated user, group, and SSH key management across multiple RHEL servers using Ansible.</li>
+          <li>Configured secure SSH access and sudo policies, managing credentials with Ansible Vault to strengthen server security.</li>
+        </ul>
+      </div>
+      <div class="proj-card">
+        <div class="proj-file">serverless-job-portal/</div>
+        <div class="proj-name">Serverless Job Portal on AWS</div>
+        <ul>
+          <li>Built with Lambda, API Gateway, DynamoDB, and S3 — handling 100+ applications with secure resume uploads.</li>
+          <li>Designed RESTful APIs using IAM roles, CORS configuration, and CloudWatch logging for a secure, scalable backend.</li>
+        </ul>
+        <a class="proj-link" href="https://github.com/Sampada-Aher12/serverless_job_portal" target="_blank" rel="noopener">→ view on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="sec-head"><span class="sec-tag">$</span><h2>cat education.conf certs.conf</h2></div>
+    <div class="two-col">
+      <div class="info-card">
+        <div class="label">Education</div>
+        <div class="title">BE Computer Engineering</div>
+        <div class="sub">SND College of Engineering &amp; Research Center, Yeola</div>
+        <div class="sub">2021 – 2025 · CGPA 7.88/10</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Certification</div>
+        <div class="title">RHCSA (EX200)</div>
+        <div class="sub">Red Hat Certified System Administrator</div>
+        <div class="sub">Issued 2026</div>
+        <span class="cert-id">ID: 260-029-442</span>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="sec-head"><span class="sec-tag">$</span><h2>cat contact.conf</h2></div>
+    <div class="contact-term">
+      <div class="contact-row">location&nbsp;&nbsp;= "Pune, Maharashtra"</div>
+      <div class="contact-row">email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <a href="mailto:sampadaaher8@gmail.com">sampadaaher8@gmail.com</a></div>
+      <div class="contact-row">phone&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <a href="tel:+917249360045">+91-7249360045</a></div>
+      <div class="contact-row">linkedin&nbsp;&nbsp;&nbsp;= <a href="https://www.linkedin.com/in/sampada-aher-069a5a230" target="_blank" rel="noopener">linkedin.com/in/sampada-aher</a></div>
+    </div>
+    <div class="footer-note">// built from resume.pdf — last updated 2026</div>
+  </footer>
+</div>
+
+<script>
+  const lines = [
+    { cmd: "whoami", out: "sampada_aher — rhcsa · linux &amp; aws systems administrator" },
+    { cmd: "cat role.txt", out: "Junior System Administrator @ New Wings IT Solution" },
+    { cmd: "systemctl status skills.service", out: "● active (running) — RHEL, AWS, Ansible, Docker, Jenkins" }
+  ];
+  const body = document.getElementById('termBody');
+  let li = 0;
+
+  function typeLine(lineObj, done){
+    const lineEl = document.createElement('div');
+    lineEl.className = 'term-line';
+    lineEl.innerHTML = '<span class="prompt">sampada@rhel10</span><span class="path">:~$</span> ';
+    body.appendChild(lineEl);
+    const textSpan = document.createElement('span');
+    textSpan.style.color = 'var(--text)';
+    lineEl.appendChild(textSpan);
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    lineEl.appendChild(cursor);
+
+    let i = 0;
+    const cmd = lineObj.cmd;
+    const typer = setInterval(()=>{
+      textSpan.textContent += cmd[i];
+      i++;
+      if(i >= cmd.length){
+        clearInterval(typer);
+        cursor.remove();
+        setTimeout(()=>{
+          const outEl = document.createElement('div');
+          outEl.className = 'term-out';
+          outEl.innerHTML = lineObj.out;
+          body.appendChild(outEl);
+          done();
+        }, 250);
+      }
+    }, 38);
+  }
+
+  function runAll(){
+    if(li >= lines.length){
+      const finalPrompt = document.createElement('div');
+      finalPrompt.className = 'term-line';
+      finalPrompt.innerHTML = '<span class="prompt">sampada@rhel10</span><span class="path">:~$</span> <span class="cursor"></span>';
+      body.appendChild(finalPrompt);
+      return;
+    }
+    typeLine(lines[li], ()=>{ li++; runAll(); });
+  }
+
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    body.innerHTML = lines.map(l => `<div class="term-line"><span class="prompt">sampada@rhel10</span><span class="path">:~$</span> ${l.cmd}</div><div class="term-out">${l.out}</div>`).join('') + '<div class="term-line"><span class="prompt">sampada@rhel10</span><span class="path">:~$</span> <span class="cursor"></span></div>';
+  } else {
+    runAll();
+  }
+</script>
+
+</body>
+</html>
